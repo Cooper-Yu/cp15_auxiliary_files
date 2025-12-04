@@ -28,6 +28,7 @@ install(
     meshes
 	urdf
 	xacro
+	worlds
   DESTINATION
     share/${PROJECT_NAME}/
 )

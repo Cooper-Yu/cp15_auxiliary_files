@@ -65,7 +65,6 @@
       </inertial>
     </link>
 
-
 	<xacro:rubber_wheel_gazebo prefix="${prefix}" />
 
 
