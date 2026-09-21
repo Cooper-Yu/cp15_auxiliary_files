@@ -128,6 +128,9 @@
     <gazebo>
         <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
             <parameters>$(find rb1_ros2_description)/config/rb1_controller.yaml</parameters>
+            <ros>
+                <remapping>/robot_description:=/rb1_robot/robot_description</remapping>
+            </ros>
         </plugin>
     </gazebo>
 
