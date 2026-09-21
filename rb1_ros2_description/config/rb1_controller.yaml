@@ -1,0 +1,2 @@
+# CP15-C016 TODO：填写 controller_manager -> ros__parameters -> update_rate。
+# 沿用 Section15 6.8 示例值 10 Hz；控制器实例及其参数在后续片段添加。

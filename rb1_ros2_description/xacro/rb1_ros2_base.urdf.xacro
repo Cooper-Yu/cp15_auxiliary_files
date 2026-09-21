@@ -107,5 +107,26 @@
 
 	<!-- Gazebo ros2 control plugins -->
 	<!-- <xacro:ros2_control/> -->
+    <!-- CP15-C014: Learner control block (default prefix robot_). -->
+    <ros2_control name="diff_drive" type="system">
+        <hardware>
+            <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+        </hardware>
+        <joint name="robot_left_wheel_joint">
+            <command_interface name="velocity"/>
+            <state_interface name="velocity"/>
+        </joint>
+
+        <joint name="robot_right_wheel_joint">
+            <command_interface name="velocity"/>
+            <state_interface name="velocity"/>
+        </joint>
+    </ros2_control>
+    <!-- CP15-C015: Learner Gazebo plugin configuration. -->
+    <gazebo>
+        <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
+            <parameters>$(find rb1_ros2_description)/config/rb1_controller.yaml</parameters>
+        </plugin>
+    </gazebo>
 
 </robot>
