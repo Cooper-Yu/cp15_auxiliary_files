@@ -116,11 +116,22 @@ def generate_launch_description():
         output="screen"
     )
 
+    rb1_elevator_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=[
+            "rb1_elevator_controller",
+            "--controller-manager", "/controller_manager"
+        ],
+        output="screen"
+    )
+
     return LaunchDescription([
         gz_sim,
         rsp_robot,
         gz_spawn_entity,
         gz_bridge,
         joint_state_broadcaster_spawner,
-        rb1_base_controller_spawner
+        rb1_base_controller_spawner,
+        rb1_elevator_controller_spawner,
     ])

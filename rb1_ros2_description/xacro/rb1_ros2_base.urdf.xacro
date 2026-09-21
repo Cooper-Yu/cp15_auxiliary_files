@@ -123,6 +123,11 @@
             <state_interface name="velocity"/>
             <state_interface name="position"/>
         </joint>
+
+        <joint name="robot_elevator_platform_joint">
+            <command_interface name="position"/>
+            <state_interface name="position"/>
+        </joint>
     </ros2_control>
     <!-- CP15-C015: Learner Gazebo plugin configuration. -->
     <gazebo>
