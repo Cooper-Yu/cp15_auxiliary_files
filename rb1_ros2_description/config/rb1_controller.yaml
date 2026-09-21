@@ -1,2 +1,18 @@
 # CP15-C016 TODO：填写 controller_manager -> ros__parameters -> update_rate。
 # 沿用 Section15 6.8 示例值 10 Hz；控制器实例及其参数在后续片段添加。
+controller_manager:
+  ros__parameters:
+    update_rate: 10
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+    rb1_base_controller:
+      type: diff_drive_controller/DiffDriveController
+
+rb1_base_controller:
+  ros__parameters:
+    left_wheel_names:
+      - robot_left_wheel_joint
+    right_wheel_names:
+      - robot_right_wheel_joint
+    wheel_separation: 0.436
+    wheel_radius: 0.076
