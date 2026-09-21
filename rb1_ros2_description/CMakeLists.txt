@@ -7,6 +7,14 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(gz_sim_vendor REQUIRED)
+find_package(gz-sim8 REQUIRED)
+add_library(rb1_elevator_startup_guard SHARED src/elevator_startup_guard.cpp)
+target_link_libraries(rb1_elevator_startup_guard PRIVATE gz-sim8::gz-sim8)
+target_compile_features(rb1_elevator_startup_guard PRIVATE cxx_std_17)
+install(TARGETS rb1_elevator_startup_guard LIBRARY DESTINATION lib)
+install(PROGRAMS scripts/elevator_startup.py scripts/elevator_command.py
+  DESTINATION lib/${PROJECT_NAME})
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)

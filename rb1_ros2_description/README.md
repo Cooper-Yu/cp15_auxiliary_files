@@ -256,6 +256,76 @@ Verify both the base and lift on the same updated revision.
 
 ## Verification scope
 
+### Important: delayed restart from zero remains unreliable
+
+The earlier short up/down test below did not cover a long dwell at zero.
+Later local and cloud tests reproduced failure to rise after settling on the
+lower limit, despite an accepted nonzero command. Do not treat those earlier
+results as a complete repair.
+
+### Optional guarded simulation startup
+
+This opt-in **simulation-only workaround** starts the lift at 2 mm and temporarily
+locks its simulated position limits. A bounded coordinator verifies active
+controllers, the claimed position interface, a unique command subscriber,
+fresh feedback and the internal 2 mm command. It then restores the original
+0–34 mm limits gradually over one simulation second. After release the plugin
+stops writing limits. Failure shuts down this launch instead of reporting ready.
+The default `rb1_ros2_xacro.launch.py` remains unchanged in behavior.
+
+The package now builds a Gazebo Harmonic plugin and requires the Jazzy
+`gz_sim_vendor` development environment, plus `rclpy`,
+`controller_manager_msgs`, `std_msgs` and Python YAML. Rebuild the package:
+
+```bash
+source /opt/ros/jazzy/setup.bash
+cd ~/ros2_ws
+colcon build --packages-select robotnik_sensors rb1_ros2_description --executor sequential
+source ~/ros2_ws/install/local_setup.bash
+ros2 launch rb1_ros2_description rb1_guarded_sim.launch.py
+```
+
+Stop any older simulation first. Wait for `RB1_ELEVATOR_READY` before issuing
+commands. In another terminal with the same ROS environment:
+
+```bash
+source /opt/ros/jazzy/setup.bash
+source ~/ros2_ws/install/local_setup.bash
+ros2 run rb1_ros2_description elevator_command.py 0.02
+sleep 10
+timeout --signal=INT 10s ros2 topic echo /joint_states --once
+ros2 run rb1_ros2_description elevator_command.py 0.001
+sleep 20
+timeout --signal=INT 10s ros2 topic echo /joint_states --once
+ros2 run rb1_ros2_description elevator_command.py 0.02
+sleep 10
+timeout --signal=INT 10s ros2 topic echo /joint_states --once
+```
+
+Read the position corresponding to `robot_elevator_platform_joint`, not an
+assumed array index. Expected values are near 0.02, 0.001, then 0.02 m.
+The command utility rejects nonfinite values and targets outside 1–34 mm;
+it does not silently convert zero to 1 mm and does not prove motion succeeded.
+Direct publishing to the controller bypasses this check. **Do not send zero in
+this workaround workflow**, including the older down-command example.
+Do not reset the world during a guarded run: protection is one-shot; restart
+the launch for a new trial. Private `/tmp/rb1-elevator-guard-*` folders retain
+small handoff logs for diagnosis.
+
+This changes the usable low position to 1 mm, not the physical URDF limit.
+It does not repair the zero-limit behavior, validate real hardware dynamics,
+justify reverting the mass/COM change, or establish cloud grading acceptance.
+Base motion/stop commands remain those in the earlier sections.
+
+Local package validation on 2026-09-21: guarded startup plus three positive-low
+cycles passed. A second fresh launch exercised the installed command utility:
+0.019999977 m → 0.000999999991 m (after a 20-second wall wait) →
+0.019999976 m. The base then moved 0.100 m and stopped with zero-speed feedback.
+Static checks confirmed that the default expanded model is unchanged and
+invalid targets (zero, negative, above 34 mm, NaN and infinity) are rejected.
+The 34 mm upper endpoint was not retested in this guarded workflow.
+Cloud validation of this new optional entry point is still pending.
+
 Local reference environment: Ubuntu 24.04/WSL, Jazzy, Gazebo Sim 8.11.0,
 `gz_ros2_control` 1.2.20. The model has passed base forward/stop tests and lift
 targets 0.02, 0.034 and 0.0 m, including TF feedback. The Construct previously

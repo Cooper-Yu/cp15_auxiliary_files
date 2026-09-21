@@ -55,6 +55,9 @@
 	<xacro:property name="elevator_z" value="0.213" />
 
 	<xacro:arg name="prefix" default="robot_"/>
+    <xacro:arg name="elevator_startup_guard" default="false"/>
+    <xacro:arg name="elevator_guard_dir" default=""/>
+    <xacro:arg name="elevator_guard_library" default=""/>
 	<xacro:arg name="ros_planar_move_plugin" default="false"/>
 	<xacro:arg name="gpu" default="false"/>
     
@@ -127,7 +130,11 @@
         <!-- The lift accepts an absolute prismatic position in metres. -->
         <joint name="robot_elevator_platform_joint">
             <command_interface name="position"/>
-            <state_interface name="position"/>
+            <state_interface name="position">
+                <xacro:if value="$(arg elevator_startup_guard)">
+                    <param name="initial_value">0.002</param>
+                </xacro:if>
+            </state_interface>
         </joint>
     </ros2_control>
     <!-- Load the controller manager inside Gazebo and apply the controller YAML.
@@ -141,4 +148,12 @@
         </plugin>
     </gazebo>
 
+    <!-- Simulation-only startup workaround; original joint limits stay unchanged. -->
+    <xacro:if value="$(arg elevator_startup_guard)">
+        <gazebo>
+            <plugin filename="$(arg elevator_guard_library)" name="RB1ElevatorStartupGuard">
+                <directory>$(arg elevator_guard_dir)</directory>
+            </plugin>
+        </gazebo>
+    </xacro:if>
 </robot>
