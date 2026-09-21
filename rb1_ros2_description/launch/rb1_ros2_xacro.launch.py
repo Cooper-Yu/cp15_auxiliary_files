@@ -93,9 +93,33 @@ def generate_launch_description():
         output="screen",
     )
 
+    # CP15-C024：关节状态广播器启动动作。
+    joint_state_broadcaster_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=[
+            "joint_state_broadcaster",
+            "--controller-manager", "/controller_manager"
+        ],
+        output="screen"
+    )
+
+    # CP15-C025：底盘控制器启动动作。
+    rb1_base_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=[
+            "rb1_base_controller",
+            "--controller-manager", "/controller_manager"
+        ],
+        output="screen"
+    )
+
     return LaunchDescription([
         gz_sim,
         rsp_robot,
         gz_spawn_entity,
-        gz_bridge
+        gz_bridge,
+        joint_state_broadcaster_spawner,
+        rb1_base_controller_spawner
     ])
