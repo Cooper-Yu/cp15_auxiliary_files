@@ -26,9 +26,10 @@ install(
   DIRECTORY
     launch
     meshes
-	urdf
-	xacro
-	worlds
+    config
+    urdf
+    xacro
+    worlds
   DESTINATION
     share/${PROJECT_NAME}/
 )
