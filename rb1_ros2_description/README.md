@@ -51,6 +51,12 @@ This startup workaround avoids the known lower-limit sticking issue; use 1 mm,
 not zero, as the lower target. Do not reset the world; restart the launch.
 Cloud validation of this workaround is pending.
 
+The elevator starts at 2 mm and is temporarily held there during controller
+handoff, leaving clearance above the original 0 mm physical lower limit.
+The 1 mm lowering target avoids returning to that limit, where sticking was
+observed. These are experimentally verified simulation workaround values,
+not hardware specifications or uniquely optimal settings.
+
 ## 3. Activate and check controllers
 
 The launch automatically loads and activates all three controllers. In another
