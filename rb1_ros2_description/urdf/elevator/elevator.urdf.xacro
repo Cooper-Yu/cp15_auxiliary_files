@@ -58,7 +58,8 @@
 		</collision>
 	</link>
 
-	<!-- ELEVATOR PLATFORM -->
+    <!-- Positive displacement raises the platform along the parent's Z axis.
+         The 0.034 m upper limit is travel relative to the joint origin. -->
 	<joint name="${prefix}_platform_joint" type="prismatic">
 			<origin xyz="0.0 0.0 0.041" rpy="0 0 0 " />
 			<parent link="${prefix}_base_link"/>
@@ -72,7 +73,7 @@
 			<origin xyz="0 0 0" />
 			<inertia  ixx="0.00007" ixy="0.0"  ixz="0.0"  iyy="0.00007"  iyz="0.0"  izz="0.0078" />
 		</inertial-->
-        <!-- Simulation workaround verified in CP15-C069: changing mass and COM
+        <!-- Verified simulation workaround: changing mass and center of mass
              together restores lift motion. These are not measured hardware values.
              Keep the original inertia tensor to preserve the isolated repair;
              physically calibrated mass, COM and inertia remain future work. -->

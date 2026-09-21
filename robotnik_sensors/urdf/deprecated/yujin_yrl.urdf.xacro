@@ -60,6 +60,6 @@
         rpy="0 0 0" />
     </joint>
 
-    <!-- TODO: Simulate sensor -->
+    <!-- Geometry only: this deprecated macro does not implement sensor simulation. -->
   </xacro:macro>
 </robot>

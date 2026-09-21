@@ -2,7 +2,7 @@
 <robot xmlns:xacro="http://wiki.ros.org/xacro">
   <!-- source en.wikipedia.org/wiki/List_of_moments_of_inertia-->
 
-  <!-- TODO Solid sphere of radius r and mass m-->
+  <!-- Solid sphere of radius r and mass m-->
   <xacro:macro
     name="solid_sphere_inertia"
     params="m r">
@@ -15,7 +15,7 @@
       izz="${(2*r*r*m)/5}" />
   </xacro:macro>
 
-  <!-- TODO Hollow sphere of radius r and mass m-->
+  <!-- Hollow sphere of radius r and mass m-->
   <xacro:macro
     name="solid_sphere_inertia"
     params="m r">
@@ -28,7 +28,7 @@
       izz="${(2*r*r*m)/3}" />
   </xacro:macro>
 
-  <!-- TODO Solid ellipsoid of semi-axes a, b, c and mass m-->
+  <!-- Solid ellipsoid of semi-axes a, b, c and mass m-->
   <xacro:macro
     name="ellipsoid_semi_axes_inertia"
     params="a b c m r">
@@ -41,7 +41,7 @@
       izz="${(m*(a*a+b*b))/5}" />
   </xacro:macro>
 
-  <!-- TODO Right circular cone with radius r, height h and mass m, about the apex -->
+  <!-- Right circular cone with radius r, height h and mass m, about the apex -->
   <xacro:macro
     name="right_circular_cone_inertia"
     params="m r h">
@@ -54,7 +54,7 @@
       izz="${(3*m*(r*r))/10}" />
   </xacro:macro>
 
-  <!-- TODO Solid cuboid of width w, height h, depth d, and mass m -->
+  <!-- Solid cuboid of width w, height h, depth d, and mass m -->
   <!-- w relates to X axis, d to Z axis, and h to Y axis -->
   <!-- Keep this comment -->
   <xacro:macro
@@ -69,7 +69,7 @@
       izz="${(m*(w*w+h*h))/12}" />
   </xacro:macro>
 
-  <!-- TODO Solid cylinder of radius r, height h and mass m -->
+  <!-- Solid cylinder of radius r, height h and mass m -->
   <xacro:macro
     name="solid_cylinder_inertia"
     params="m r h">
@@ -82,7 +82,7 @@
       izz="${m*r*r/2}" />
   </xacro:macro>
 
-  <!-- TODO Thick-walled cylindrical tube with open ends, of inner radius r1, outer radius r2, length h and mass m -->
+  <!-- Thick-walled cylindrical tube with open ends, of inner radius r1, outer radius r2, length h and mass m -->
   <xacro:macro
     name="thick_walled_cylinder_inertia"
     params="m r1 r2 h">

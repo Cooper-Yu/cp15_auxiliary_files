@@ -18,7 +18,7 @@ def generate_launch_description():
     gz_sim_pkg = get_package_share_directory("ros_gz_sim")
     sensors_pkg = get_package_share_directory("robotnik_sensors")
 
-    # This is to find the models inside the models folder in rb1_ros2_description package
+    # Make installed robot and sensor meshes discoverable by Gazebo.
     install_dir = get_package_prefix(description_package_name)
     install_dir_sensors = get_package_prefix('robotnik_sensors')
     gazebo_models_path = os.path.join(description_package_path, 'meshes')
@@ -33,6 +33,7 @@ def generate_launch_description():
 
     print("GZ_SIM_RESOURCE_PATH=="+str(os.environ["GZ_SIM_RESOURCE_PATH"]))
 
+    # Use the clock bridged from Gazebo for simulated robot state.
     use_sim_time = LaunchConfiguration('use_sim_time', default='true')
 
     # Setup to launch the simulator and Gazebo world
@@ -52,6 +53,8 @@ def generate_launch_description():
 
     robot_name_1 = "rb1_robot"
 
+    # Keep robot-specific description/TF names, but consume the broadcaster's
+    # global /joint_states topic so moving wheel and lift transforms update.
     rsp_robot = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
@@ -63,7 +66,7 @@ def generate_launch_description():
         remappings=[('joint_states', '/joint_states')],
     )
 
-    # Spawn the Robot #
+    # Spawn from the same description published by robot_state_publisher.
     gz_spawn_entity = Node(
         package="ros_gz_sim",
         executable="create",
@@ -79,7 +82,7 @@ def generate_launch_description():
         output="screen",
     )
 
-    # ROS-Gazebo Bridge
+    # Bridge simulation time and laser scans; control uses gz_ros2_control.
     gz_bridge = Node(
         package="ros_gz_bridge",
         executable="parameter_bridge",
@@ -94,7 +97,8 @@ def generate_launch_description():
         output="screen",
     )
 
-    # CP15-C024：关节状态广播器启动动作。
+    # Gazebo creates /controller_manager; spawners connect to that manager.
+    # Publish joint feedback for robot_state_publisher and inspection.
     joint_state_broadcaster_spawner = Node(
         package="controller_manager",
         executable="spawner",
@@ -105,7 +109,7 @@ def generate_launch_description():
         output="screen"
     )
 
-    # CP15-C025：底盘控制器启动动作。
+    # Activate the differential-drive controller configured in the YAML file.
     rb1_base_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
@@ -116,6 +120,7 @@ def generate_launch_description():
         output="screen"
     )
 
+    # The lift and wheels claim different joints and can remain active together.
     rb1_elevator_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",

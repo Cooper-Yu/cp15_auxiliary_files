@@ -105,13 +105,13 @@
 		<origin xyz="0.210 0.0 0.21" rpy="0 3.1416 3.1416"/>
 	</xacro:sensor_hokuyo_ust20lx>
 
-	<!-- Gazebo ros2 control plugins -->
-	<!-- <xacro:ros2_control/> -->
-    <!-- CP15-C014: Learner control block (default prefix robot_). -->
+    <!-- Share one simulated hardware system between the wheels and lift.
+         Joint names use the model's default robot_ prefix, not TF frame names. -->
     <ros2_control name="diff_drive" type="system">
         <hardware>
             <plugin>gz_ros2_control/GazeboSimSystem</plugin>
         </hardware>
+        <!-- Wheel commands are rad/s; position feedback supports odometry. -->
         <joint name="robot_left_wheel_joint">
             <command_interface name="velocity"/>
             <state_interface name="velocity"/>
@@ -124,12 +124,14 @@
             <state_interface name="position"/>
         </joint>
 
+        <!-- The lift accepts an absolute prismatic position in metres. -->
         <joint name="robot_elevator_platform_joint">
             <command_interface name="position"/>
             <state_interface name="position"/>
         </joint>
     </ros2_control>
-    <!-- CP15-C015: Learner Gazebo plugin configuration. -->
+    <!-- Load the controller manager inside Gazebo and apply the controller YAML.
+         Subscribe to the description published in the robot namespace. -->
     <gazebo>
         <plugin filename="gz_ros2_control-system" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
             <parameters>$(find rb1_ros2_description)/config/rb1_controller.yaml</parameters>

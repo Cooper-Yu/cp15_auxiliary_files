@@ -1,5 +1,5 @@
-# CP15-C016 TODO：填写 controller_manager -> ros__parameters -> update_rate。
-# 沿用 Section15 6.8 示例值 10 Hz；控制器实例及其参数在后续片段添加。
+# One manager updates the base, lift and joint-state broadcaster at 10 Hz.
+# Declare controller types here; configure each instance separately below.
 controller_manager:
   ros__parameters:
     update_rate: 10
@@ -12,17 +12,23 @@ controller_manager:
 
 rb1_base_controller:
   ros__parameters:
+    # Use ros2_control joint names, not the prefixed TF frame names.
     left_wheel_names:
       - robot_left_wheel_joint
     right_wheel_names:
       - robot_right_wheel_joint
+    # Wheel geometry is expressed in metres.
     wheel_separation: 0.436
     wheel_radius: 0.076
+    # Use wheel positions for odometry and the existing robot base TF frame.
     position_feedback: true
     base_frame_id: "rb1_robot/robot_base_footprint"
+    # base_frame_id already includes the robot prefix; do not add it twice.
     tf_frame_prefix_enable: false
 
 rb1_elevator_controller:
   ros__parameters:
+    # Float64MultiArray entries on ~/commands follow this joint-list order.
+    # The prismatic joint takes absolute positions in metres, from 0 to 0.034.
     joints:
       - robot_elevator_platform_joint

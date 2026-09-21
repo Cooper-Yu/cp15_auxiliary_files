@@ -69,7 +69,7 @@
 
     <link name="${prefix}_sonar_link" />
     <link name="${prefix}_laser_link" />
-    <!-- TODO add Gazebo stuff for simulation-->
+    <!-- Legacy Gazebo sensor configuration follows; check compatibility before use. -->
 
     <gazebo reference="${prefix}_sonar_link">
       <material>Gazebo/Yellow</material>
