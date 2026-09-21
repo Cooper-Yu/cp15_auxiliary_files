@@ -59,7 +59,8 @@ def generate_launch_description():
         namespace=robot_name_1,
         parameters=[{'frame_prefix': robot_name_1 + '/', 'use_sim_time': use_sim_time,
                      'robot_description': ParameterValue(Command(['xacro ', robot_desc_path, ' robot_name:=', robot_name_1]), value_type=str)}],
-        output="screen"
+        output="screen",
+        remappings=[('joint_states', '/joint_states')],
     )
 
     # Spawn the Robot #
