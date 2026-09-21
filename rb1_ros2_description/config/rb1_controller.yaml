@@ -16,3 +16,6 @@ rb1_base_controller:
       - robot_right_wheel_joint
     wheel_separation: 0.436
     wheel_radius: 0.076
+    position_feedback: true
+    base_frame_id: "rb1_robot/robot_base_footprint"
+    tf_frame_prefix_enable: false
