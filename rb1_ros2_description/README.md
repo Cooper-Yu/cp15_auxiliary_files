@@ -33,20 +33,13 @@ source ~/ros2_ws/install/local_setup.bash
 
 ## 2. Start the simulation
 
-Task 1's standard entry point:
+Use the same entry point for both tasks; startup protection is included:
 
 ```bash
 ros2 launch rb1_ros2_description rb1_ros2_xacro.launch.py
 ```
 
-For the elevator workflow below, stop that launch with Ctrl+C and use this
-entry point instead (it also supports base control):
-
-```bash
-ros2 launch rb1_ros2_description rb1_guarded_sim.launch.py
-```
-
-Run only one simulation. Wait for `RB1_ELEVATOR_READY` before moving the elevator.
+Run only one simulation. Wait for `RB1_ELEVATOR_READY` before sending commands.
 This startup workaround avoids the known lower-limit sticking issue; use 1 mm,
 not zero, as the lower target. Do not reset the world; restart the launch.
 Cloud validation of this workaround is pending.

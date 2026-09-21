@@ -73,13 +73,11 @@
 			<origin xyz="0 0 0" />
 			<inertia  ixx="0.00007" ixy="0.0"  ixz="0.0"  iyy="0.00007"  iyz="0.0"  izz="0.0078" />
 		</inertial-->
-        <!-- Verified simulation workaround: changing mass and center of mass
-             together restores lift motion. These are not measured hardware values.
-             Keep the original inertia tensor to preserve the isolated repair;
-             physically calibrated mass, COM and inertia remain future work. -->
+        <!-- Original model inertial values; startup protection is handled
+             separately by the simulation launch's startup guard. -->
 		<inertial>
-            <mass value="0.5" />
-            <origin xyz="0 0 0" />
+            <mass value="0.005" />
+            <origin xyz="0 0 -0.27" />
 			<xacro:solid_cuboid_inertia m="0.005" h="0.05" d="0.05" w="0.05"/>
 		</inertial>
 		<visual>

@@ -1,7 +1,9 @@
 import os
+import tempfile
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, RegisterEventHandler, TimerAction, DeclareLaunchArgument
-from launch.event_handlers import OnProcessStart, OnProcessExit
+from launch.actions import IncludeLaunchDescription, RegisterEventHandler, EmitEvent
+from launch.event_handlers import OnProcessExit
+from launch.events import Shutdown
 from launch.substitutions import Command, LaunchConfiguration, PathJoinSubstitution
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
@@ -20,6 +22,19 @@ def generate_launch_description():
 
     # Make installed robot and sensor meshes discoverable by Gazebo.
     install_dir = get_package_prefix(description_package_name)
+    # One private handoff directory per launch prevents stale release signals.
+    guard_directory = tempfile.mkdtemp(prefix='rb1-elevator-guard-')
+    guard_library = os.path.join(install_dir, 'lib', 'librb1_elevator_startup_guard.so')
+    elevator_startup = Node(
+        package=description_package_name, executable='elevator_startup.py',
+        arguments=[guard_directory], output='screen')
+
+    def startup_exited(event, context):
+        # Never leave a partially initialized simulation running as if ready.
+        if event.returncode != 0:
+            return [EmitEvent(event=Shutdown(reason='Elevator startup guard failed'))]
+        return []
+
     install_dir_sensors = get_package_prefix('robotnik_sensors')
     gazebo_models_path = os.path.join(description_package_path, 'meshes')
     sensor_models_path = os.path.join(sensors_pkg, 'meshes')
@@ -63,9 +78,9 @@ def generate_launch_description():
         parameters=[{'frame_prefix': robot_name_1 + '/', 'use_sim_time': use_sim_time,
                      'robot_description': ParameterValue(Command([
                          'xacro ', robot_desc_path, ' robot_name:=', robot_name_1,
-                         ' elevator_startup_guard:=', LaunchConfiguration('elevator_startup_guard'),
-                         ' elevator_guard_dir:=', LaunchConfiguration('elevator_guard_dir'),
-                         ' elevator_guard_library:=', LaunchConfiguration('elevator_guard_library')
+                         ' elevator_startup_guard:=true',
+                         ' elevator_guard_dir:=', guard_directory,
+                         ' elevator_guard_library:=', guard_library
                      ]), value_type=str)}],
         output="screen",
         remappings=[('joint_states', '/joint_states')],
@@ -137,9 +152,8 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
-        DeclareLaunchArgument('elevator_startup_guard', default_value='false'),
-        DeclareLaunchArgument('elevator_guard_dir', default_value='/tmp/unused_rb1_guard'),
-        DeclareLaunchArgument('elevator_guard_library', default_value='unused'),
+        RegisterEventHandler(OnProcessExit(
+            target_action=elevator_startup, on_exit=startup_exited)),
         gz_sim,
         rsp_robot,
         gz_spawn_entity,
@@ -147,4 +161,5 @@ def generate_launch_description():
         joint_state_broadcaster_spawner,
         rb1_base_controller_spawner,
         rb1_elevator_controller_spawner,
+        elevator_startup,
     ])
